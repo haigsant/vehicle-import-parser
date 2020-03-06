@@ -20,9 +20,9 @@ class VehicleImportsModel {
     this.importFile = importFile;
   }
 
-  vehicleImportsModel() {
+  filterFields() {
     if (!this.importFile || !this.importFile.length) {
-      throw Error("No Import File for vehicleImportsModel");
+      throw Error("No Import File for filterFields");
     }
     const returnFile = [];
 

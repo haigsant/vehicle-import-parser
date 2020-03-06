@@ -6,7 +6,7 @@ const uploadProviderInventory = async (provider, filePath) => {
     const formatProvider = provider.replace(/\W+/g, "-").toLowerCase();
 
     const json = csvToJson(filePath);
-    const filteredJson = new VehicleImports(json).vehicleImportsModel();
+    const filteredJson = new VehicleImports(json).filterFields();
     const filename = `/conversion/${formatProvider}_${Date.now()}.json`;
 
     storeData(filteredJson, filename);
