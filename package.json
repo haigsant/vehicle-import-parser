@@ -1,0 +1,19 @@
+{
+  "name": "autofi-csv-parser",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "convert-csv-to-json": "^0.0.15",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-multer": "^1.0.2",
+    "koa-router": "^8.0.8",
+    "sqlite3": "^4.1.1",
+    "stream": "^0.0.2"
+  }
+}
