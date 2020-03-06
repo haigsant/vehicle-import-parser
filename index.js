@@ -1,53 +1,40 @@
 const Koa = require("koa");
-var Router = require("koa-router");
-var bodyParser = require("koa-body");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const csvToJson = require("convert-csv-to-json");
-const VehicleImports = require("./app/vehicle-imports/vehicleImports.model");
-const dir = "uploads";
+const Router = require("koa-router");
+const bodyParser = require("koa-body");
+const {
+  uploadProviderInventory
+} = require("./app/vehicle-imports/vehicleImports.handler");
 
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
-}
+const app = new Koa();
+const router = new Router();
 
-var app = new Koa();
-var router = new Router();
 app.use(
   bodyParser({
-    formidable: { uploadDir: "./uploads" }, //This is where the files would come
+    formidable: { uploadDir: "./uploads" },
     multipart: true,
     urlencoded: true
   })
 );
-// response
-router.get("/", ctx => {
-  ctx.body = "Hello Koa";
-});
-
-const storeData = async (data, filename) => {
-  try {
-    await fs.writeFileSync(
-      path.join(__dirname, "/conversion/", filename),
-      JSON.stringify(data)
-    );
-  } catch (err) {
-    console.error(err);
-  }
-};
 
 router.post("/vehicle-import", async ctx => {
-  const file = ctx.request.files.upload;
-  const user = ctx.request.body.user;
+  try {
+    if (
+      !ctx.request.files ||
+      !ctx.request.body ||
+      !ctx.request.files.upload ||
+      !ctx.request.body.provider
+    ) {
+      ctx.throw(400, "Missing upload or provider parameters");
+    }
 
-  let json = csvToJson.fieldDelimiter(",").getJsonFromCsv(file.path);
-  let filteredJson = new VehicleImports(json).vehicleImportsModel();
-  const filename = `${user}_${Date.now()}.json`;
+    const file = ctx.request.files.upload;
+    const provider = ctx.request.body.provider;
 
-  let status = await storeData(filteredJson, filename);
-
-  ctx.body = filteredJson;
+    await uploadProviderInventory(provider, file.path);
+    ctx.status = 200;
+  } catch (error) {
+    ctx.throw(500, error);
+  }
 });
 
 app.use(router.routes()).use(router.allowedMethods());
